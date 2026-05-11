@@ -1,4 +1,4 @@
-import { useFadeUp } from '../hooks/useFadeUp' // updated
+import { uimport { useFadeUp } from '../hooks/useFadeUp'
 
 export default function Work({ goTo }) {
   useFadeUp()
@@ -51,12 +51,108 @@ export default function Work({ goTo }) {
               <span className="service-tag">Zoho CRM</span>
             </div>
           </div>
-          <div className="service-card coming fade-up" style={{ transitionDelay: '.2s' }}>
-            <span className="service-badge badge-soon"><span className="badge-dot"></span>Coming soon</span>
-            <h3 className="service-name">AI Red Teaming & Security</h3>
-            <p className="service-desc">I'm actively building expertise in adversarial AI testing and LLM security — probing AI systems for the vulnerabilities that could become tomorrow's headlines.</p>
-            <p className="coming-note">Interested in being an early client? Reach out and let's talk.</p>
+        </div>
+      </section>
+
+      <section className="services fade-up" style={{ borderTop: '1px solid var(--border)' }}>
+        <p className="section-label">What I've built</p>
+        <h2 className="section-title">Builds & Projects</h2>
+        <div className="services-grid">
+
+          <div className="service-card active fade-up">
+            <span className="service-badge badge-live"><span className="badge-dot"></span>Live</span>
+            <h3 className="service-name">Signl Cycle</h3>
+            <p className="service-desc">AI-powered women's health app with custom symptom tracking, pattern analysis, and clinical report generation. Full-stack independent build from concept to deployment.</p>
+            <div className="service-tags">
+              <span className="service-tag">React</span>
+              <span className="service-tag">Vite</span>
+              <span className="service-tag">Supabase</span>
+              <span className="service-tag">Claude API</span>
+            </div>
+            <a href="https://signlcycle.netlify.app" target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', marginTop: '1.25rem', fontSize: '0.72rem', fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--green)', textDecoration: 'none' }}>View project →</a>
           </div>
+
+          <div className="service-card active fade-up" style={{ transitionDelay: '.1s' }}>
+            <span className="service-badge badge-live"><span className="badge-dot"></span>Live</span>
+            <h3 className="service-name">CrEAIte</h3>
+            <p className="service-desc">Full AI-powered web application — front-end development, AI API integration, user experience design, and payment processing in a production-grade interactive tool.</p>
+            <div className="service-tags">
+              <span className="service-tag">React</span>
+              <span className="service-tag">Vite</span>
+              <span className="service-tag">Claude API</span>
+              <span className="service-tag">Stripe</span>
+              <span className="service-tag">Netlify</span>
+            </div>
+            <a href="http://letscreaite.netlify.app" target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', marginTop: '1.25rem', fontSize: '0.72rem', fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--green)', textDecoration: 'none' }}>View project →</a>
+          </div>
+
+          <div className="service-card active fade-up" style={{ transitionDelay: '.2s' }}>
+            <span className="service-badge badge-live"><span className="badge-dot"></span>Live</span>
+            <h3 className="service-name">Astronaut Adventure</h3>
+            <p className="service-desc">Web-based Mario-style platformer featuring a custom astronaut character — built and documented publicly on TikTok and YouTube as applied AI-assisted game prototyping content.</p>
+            <div className="service-tags">
+              <span className="service-tag">Base44</span>
+              <span className="service-tag">Built in Public</span>
+            </div>
+            <a href="https://orbit-cloud-leap.base44.app" target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', marginTop: '1.25rem', fontSize: '0.72rem', fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--green)', textDecoration: 'none' }}>View project →</a>
+          </div>
+
+          <div className="service-card coming fade-up" style={{ transitionDelay: '.3s' }}>
+            <span className="service-badge badge-soon"><span className="badge-dot"></span>In development</span>
+            <h3 className="service-name">Bear</h3>
+            <p className="service-desc">Original AI-animated health education series using generative video tools to make premenstrual disorder education accessible and engaging. Character-consistent, mission-driven storytelling.</p>
+            <div className="service-tags">
+              <span className="service-tag">Kling AI</span>
+              <span className="service-tag">Wan AI</span>
+              <span className="service-tag">Replicate</span>
+            </div>
+          </div>
+
+          <div className="service-card coming fade-up" style={{ transitionDelay: '.4s' }}>
+            <span className="service-badge badge-soon"><span className="badge-dot"></span>In development</span>
+            <h3 className="service-name">The Alien & The Monster</h3>
+            <p className="service-desc">Original AI-animated narrative series — character development, scene continuity, and visual world-building across genres. Shows the full range of generative video direction.</p>
+            <div className="service-tags">
+              <span className="service-tag">Kling AI</span>
+              <span className="service-tag">Wan AI</span>
+              <span className="service-tag">Replicate</span>
+            </div>
+          </div>
+
+          <div className="service-card active fade-up" style={{ transitionDelay: '.5s' }}>
+            <span className="service-badge badge-live"><span className="badge-dot"></span>Active</span>
+            <h3 className="service-name">Client Intake & Lead Response</h3>
+            <p className="service-desc">Automated lead form response and initial booking flow — new inquiries trigger instant follow-up, ClickUp task creation, and pipeline entry with zero manual input.</p>
+            <div className="service-tags">
+              <span className="service-tag">n8n</span>
+              <span className="service-tag">ClickUp</span>
+              <span className="service-tag">Gmail API</span>
+            </div>
+          </div>
+
+          <div className="service-card active fade-up" style={{ transitionDelay: '.6s' }}>
+            <span className="service-badge badge-live"><span className="badge-dot"></span>Active</span>
+            <h3 className="service-name">Job Search Digest</h3>
+            <p className="service-desc">End-to-end automated job pipeline — scrapes listings, AI-scores each one for fit, logs results to Google Sheets, and delivers a daily digest to Gmail. Fully hands-off.</p>
+            <div className="service-tags">
+              <span className="service-tag">n8n</span>
+              <span className="service-tag">Groq / Llama</span>
+              <span className="service-tag">Google Sheets</span>
+              <span className="service-tag">Gmail API</span>
+            </div>
+          </div>
+
+          <div className="service-card active fade-up" style={{ transitionDelay: '.7s' }}>
+            <span className="service-badge badge-live"><span className="badge-dot"></span>Active</span>
+            <h3 className="service-name">Cold Outreach & Follow-up System</h3>
+            <p className="service-desc">Multi-stage outreach automation that tracks prospect status in ClickUp, triggers follow-up sequences based on response state, and keeps the pipeline moving without manual chasing.</p>
+            <div className="service-tags">
+              <span className="service-tag">n8n</span>
+              <span className="service-tag">ClickUp</span>
+              <span className="service-tag">Gmail API</span>
+            </div>
+          </div>
+
         </div>
       </section>
 
@@ -123,12 +219,18 @@ export default function Work({ goTo }) {
           <span className="tool-pill">InvoiceASAP</span>
           <span className="tool-pill">Supabase</span>
           <span className="tool-pill">Google Sheets</span>
-          <span className="tool-pill">API Integration</span>
           <span className="tool-pill">Zapier</span>
           <span className="tool-pill">ClickUp</span>
-          <span className="tool-pill">Netlify</span>
-          <span className="tool-pill">Groq / Llama</span>
           <span className="tool-pill">React</span>
+          <span className="tool-pill">Vite</span>
+          <span className="tool-pill">Tailwind</span>
+          <span className="tool-pill">Netlify</span>
+          <span className="tool-pill">GitHub</span>
+          <span className="tool-pill">Stripe</span>
+          <span className="tool-pill">Groq / Llama</span>
+          <span className="tool-pill">Claude API</span>
+          <span className="tool-pill">Replicate</span>
+          <span className="tool-pill">VS Code</span>
         </div>
       </section>
 
