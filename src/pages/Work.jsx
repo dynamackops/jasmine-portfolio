@@ -1,4 +1,4 @@
-import { useFadeUp } from '../hooks/useFadeUp'
+import { useFadeUp } from '../hooks/useFadeUp' // updated
 
 export default function Work({ goTo }) {
   useFadeUp()
@@ -113,30 +113,24 @@ export default function Work({ goTo }) {
         </div>
       </section>
 
-     <section className="tools fade-up">
-  <p className="tools-label">Current tool stack</p>
-  <div className="tools-strip">
-    <span className="tool-pill">n8n</span>
-    <span className="tool-pill">Zoho CRM</span>
-    <span className="tool-pill">Zoho Flow</span>
-    <span className="tool-pill">QuickBooks</span>
-    <span className="tool-pill">InvoiceASAP</span>
-    <span className="tool-pill">Supabase</span>
-    <span className="tool-pill">Google Sheets</span>
-    <span className="tool-pill">Zapier</span>
-    <span className="tool-pill">ClickUp</span>
-    <span className="tool-pill">React</span>
-    <span className="tool-pill">Vite</span>
-    <span className="tool-pill">Tailwind</span>
-    <span className="tool-pill">Netlify</span>
-    <span className="tool-pill">GitHub</span>
-    <span className="tool-pill">Stripe</span>
-    <span className="tool-pill">Groq / Llama</span>
-    <span className="tool-pill">Claude API</span>
-    <span className="tool-pill">Replicate</span>
-    <span className="tool-pill">VS Code</span>
-  </div>
-</section>
+      <section className="tools fade-up">
+        <p className="tools-label">Current tool stack</p>
+        <div className="tools-strip">
+          <span className="tool-pill">n8n</span>
+          <span className="tool-pill">Zoho CRM</span>
+          <span className="tool-pill">Zoho Flow</span>
+          <span className="tool-pill">QuickBooks</span>
+          <span className="tool-pill">InvoiceASAP</span>
+          <span className="tool-pill">Supabase</span>
+          <span className="tool-pill">Google Sheets</span>
+          <span className="tool-pill">API Integration</span>
+          <span className="tool-pill">Zapier</span>
+          <span className="tool-pill">ClickUp</span>
+          <span className="tool-pill">Netlify</span>
+          <span className="tool-pill">Groq / Llama</span>
+          <span className="tool-pill">React</span>
+        </div>
+      </section>
 
       <section className="cta-section fade-up">
         <div>
