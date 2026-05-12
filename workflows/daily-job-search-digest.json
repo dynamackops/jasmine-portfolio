@@ -1,0 +1,311 @@
+{
+  "name": "Daily Job Search Digest",
+  "description": "Runs every morning at 7am. Pulls remote job listings from Remotive across two categories (operations and project management), filters by relevant keywords, then loops through each job and scores it 1-10 using Groq/Llama AI based on candidate fit. Aggregates top results, sends a formatted HTML digest email, and appends all scored jobs to a Google Sheet tracker. Also includes a disabled Indeed/Apify scraper node for optional expansion.",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [0, 96],
+      "id": "node-1",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://remotive.com/api/remote-jobs",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "operations",
+              "value": "20"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [224, 96],
+      "id": "node-2",
+      "name": "HTTP Request (Remotive - Operations)"
+    },
+    {
+      "parameters": {
+        "url": "https://remotive.com/api/remote-jobs",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "project-management",
+              "value": "20"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [448, 96],
+      "id": "node-3",
+      "name": "HTTP Request (Remotive - Project Management)"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [672, 96],
+      "id": "node-4",
+      "name": "Merge (append)"
+    },
+    {
+      "parameters": {
+        "jsCode": "const jobs = [];\n\nfor (const item of items) {\n  const jobList = item.json.jobs || [];\n  \n  for (const job of jobList) {\n    const title = (job.title || '').toLowerCase();\n    const relevant = [\n      'operations', 'project manager', 'coordinator', \n      'chief of staff', 'automation', 'workflow', 'fractional'\n    ];\n    \n    const isRelevant = relevant.some(keyword => title.includes(keyword));\n    if (!isRelevant) continue;\n    \n    jobs.push({\n      json: {\n        date_found: new Date().toLocaleDateString('en-US'),\n        job_title: job.title || '',\n        company: job.company_name || '',\n        location: job.candidate_required_location || 'Remote',\n        salary: job.salary || 'Not listed',\n        job_board: 'Remotive',\n        url: job.url || '',\n        ai_score: '',\n        applied: 'No'\n      }\n    });\n  }\n}\n\nreturn jobs;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [896, 0],
+      "id": "node-5",
+      "name": "Filter by Keywords (JavaScript)"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apify.com/v2/acts/misceres~indeed-scraper/run-sync-get-dataset-items",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "token",
+              "value": "YOUR_APIFY_API_TOKEN"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"position\": \"operations manager\",\n  \"country\": \"US\",\n  \"location\": \"Remote\",\n  \"maxItems\": 20,\n  \"saveOnlyUniqueItems\": true\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [1120, 0],
+      "id": "node-6",
+      "name": "Indeed via Apify (disabled — optional expansion)",
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [1328, 0],
+      "id": "node-7",
+      "name": "Merge ALL sources"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [1536, 0],
+      "id": "node-8",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_GROQ_API_KEY"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"llama-3.1-8b-instant\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are a job fit evaluator. Score jobs 1-10 for this candidate profile: [CANDIDATE_PROFILE_HERE — describe your skills, target roles, and preferences]. Respond with ONLY a number 1-10.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"={{ 'Job Title: ' + $json.job_title + ' Company: ' + $json.company + ' Location: ' + $json.location }}\"\n    }\n  ],\n  \"max_tokens\": 5,\n  \"temperature\": 0\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [1760, 112],
+      "id": "node-9",
+      "name": "Groq - AI Score Each Job"
+    },
+    {
+      "parameters": {
+        "jsCode": "const results = [];\n\nfor (const item of items) {\n  const score = item.json.choices?.[0]?.message?.content?.trim() || '0';\n  const jobData = $(\"Loop Over Items\").item.json;\n  \n  results.push({\n    json: {\n      date_found: new Date().toLocaleDateString('en-US'),\n      job_title: jobData.job_title || jobData.positionName || jobData.title || '',\n      company: jobData.company || jobData.company_name || jobData.companyName || '',\n      location: jobData.location || jobData.candidate_required_location || 'Remote',\n      salary: jobData.salary || '',\n      job_board: jobData.job_board || 'Indeed',\n      url: jobData.url || '',\n      ai_score: parseInt(score) || 0,\n      applied: 'No'\n    }\n  });\n}\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2016, 176],
+      "id": "node-10",
+      "name": "Format Scored Job Data (JavaScript)"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [1760, -32],
+      "id": "node-11",
+      "name": "Aggregate for Email"
+    },
+    {
+      "parameters": {
+        "sendTo": "YOUR_EMAIL_ADDRESS",
+        "subject": "=Daily Job Digest — {{ $now.toFormat('MM/dd/yyyy') }}",
+        "message": "=<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;\">\n  <h2 style=\"color: #333; border-bottom: 2px solid #4CAF50; padding-bottom: 10px;\">\n    🎯 Daily Job Digest — {{ $now.toFormat('MM/dd/yyyy') }}\n  </h2>\n  <p style=\"color: #666;\">Here are today's top job matches:</p>\n  \n  {{ $json.data.map(job => `\n  <div style=\"background: #f9f9f9; border-left: 4px solid #4CAF50; padding: 15px; margin: 10px 0; border-radius: 4px;\">\n    <h3 style=\"margin: 0 0 8px 0; color: #222;\">${job.job_title}</h3>\n    <p style=\"margin: 4px 0; color: #555;\">🏢 ${job.company}</p>\n    <p style=\"margin: 4px 0; color: #555;\">📍 ${job.location}</p>\n    <p style=\"margin: 4px 0; color: #555;\">💰 ${job.salary || 'Not listed'}</p>\n    <p style=\"margin: 4px 0; color: #555;\">🤖 AI Score: <strong>${job.ai_score}/10</strong></p>\n    <a href=\"${job.url}\" style=\"display: inline-block; margin-top: 10px; background: #4CAF50; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px;\">View Job →</a>\n  </div>\n  `).join('') }}\n  \n  <p style=\"color: #999; font-size: 12px; margin-top: 20px;\">Powered by YOUR_BUSINESS_NAME</p>\n</div>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [2000, -48],
+      "id": "node-12",
+      "name": "Send Daily Digest Email",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [2224, 176],
+      "id": "node-13",
+      "name": "Wait (rate limit buffer)"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list",
+          "cachedResultName": "Job Search Tracker",
+          "cachedResultUrl": "YOUR_GOOGLE_SHEET_URL"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "YOUR_GOOGLE_SHEET_URL"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            { "id": "date_found", "displayName": "date_found", "type": "string" },
+            { "id": "job_title", "displayName": "job_title", "type": "string" },
+            { "id": "company", "displayName": "company", "type": "string" },
+            { "id": "location", "displayName": "location", "type": "string" },
+            { "id": "salary", "displayName": "salary", "type": "string" },
+            { "id": "job_board", "displayName": "job_board", "type": "string" },
+            { "id": "url", "displayName": "url", "type": "string" },
+            { "id": "ai_score", "displayName": "ai_score", "type": "number" },
+            { "id": "applied", "displayName": "applied", "type": "string" }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [2448, 192],
+      "id": "node-14",
+      "name": "Append to Job Tracker Sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [[{ "node": "HTTP Request (Remotive - Operations)", "type": "main", "index": 0 }]]
+    },
+    "HTTP Request (Remotive - Operations)": {
+      "main": [[{ "node": "HTTP Request (Remotive - Project Management)", "type": "main", "index": 0 }]]
+    },
+    "HTTP Request (Remotive - Project Management)": {
+      "main": [[{ "node": "Merge (append)", "type": "main", "index": 0 }]]
+    },
+    "Merge (append)": {
+      "main": [[{ "node": "Filter by Keywords (JavaScript)", "type": "main", "index": 0 }]]
+    },
+    "Filter by Keywords (JavaScript)": {
+      "main": [[{ "node": "Indeed via Apify (disabled — optional expansion)", "type": "main", "index": 0 }]]
+    },
+    "Indeed via Apify (disabled — optional expansion)": {
+      "main": [[{ "node": "Merge ALL sources", "type": "main", "index": 0 }]]
+    },
+    "Merge ALL sources": {
+      "main": [[{ "node": "Loop Over Items", "type": "main", "index": 0 }]]
+    },
+    "Loop Over Items": {
+      "main": [
+        [{ "node": "Aggregate for Email", "type": "main", "index": 0 }],
+        [{ "node": "Groq - AI Score Each Job", "type": "main", "index": 0 }]
+      ]
+    },
+    "Groq - AI Score Each Job": {
+      "main": [[{ "node": "Format Scored Job Data (JavaScript)", "type": "main", "index": 0 }]]
+    },
+    "Format Scored Job Data (JavaScript)": {
+      "main": [[{ "node": "Wait (rate limit buffer)", "type": "main", "index": 0 }]]
+    },
+    "Wait (rate limit buffer)": {
+      "main": [[{ "node": "Append to Job Tracker Sheet", "type": "main", "index": 0 }]]
+    },
+    "Append to Job Tracker Sheet": {
+      "main": [[{ "node": "Loop Over Items", "type": "main", "index": 0 }]]
+    },
+    "Aggregate for Email": {
+      "main": [[{ "node": "Send Daily Digest Email", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "instanceId": "YOUR_N8N_INSTANCE_ID"
+  },
+  "tags": []
+}

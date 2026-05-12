@@ -1,0 +1,110 @@
+{
+  "name": "Lead Form Response and Initial Booking + ClickUp",
+  "description": "Monitors a Google Sheet (connected to a lead intake form) for new submissions. When a new lead row is added, simultaneously sends a personalized confirmation email with a Calendly booking link AND creates a ClickUp task populated with all form data. Runs every minute.",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list",
+          "cachedResultName": "Dynamack Ops",
+          "cachedResultUrl": "YOUR_GOOGLE_SHEET_URL"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "YOUR_SHEET_GID",
+          "mode": "list",
+          "cachedResultName": "LEADS (Pre Discovery)",
+          "cachedResultUrl": "YOUR_GOOGLE_SHEET_URL"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [0, 0],
+      "id": "node-1",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json['2. Email'] }}",
+        "subject": "Thanks for reaching out to [YOUR BUSINESS NAME]",
+        "emailType": "text",
+        "message": "=Hi {{ $json['1. Full name'] }},\n\nThank you for reaching out to [YOUR BUSINESS NAME]! I'm excited to learn more about your business ({{ $json['4. Business/Brand Name'] }}).\n\nI've reviewed what you submitted and I'm already thinking through how I can help. The best next step is to book your free 20-minute strategy session so we can:\n\n• Get clear on what you're trying to solve or build\n• Identify the fastest path to a real solution\n• Map out exactly what working together would look like\n\nYou can book a time that works best for you here: YOUR_CALENDLY_LINK\n\nOnce you're booked, I'll come prepared with specific ideas based on what you shared — so we can make the most of our time.\n\nLooking forward to connecting.\n\nBest,\n[YOUR NAME]\n[YOUR BUSINESS NAME]\nYOUR_WEBSITE_URL",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [208, 0],
+      "id": "node-2",
+      "name": "Send Confirmation Email",
+      "executeOnce": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "team": "YOUR_CLICKUP_TEAM_ID",
+        "space": "YOUR_CLICKUP_SPACE_ID",
+        "folderless": true,
+        "list": "YOUR_CLICKUP_LIST_ID",
+        "name": "=Warm lead - {{ $json['1. Full name'] }} {{ $json.Timestamp }}",
+        "additionalFields": {
+          "assignees": ["YOUR_CLICKUP_USER_ID"],
+          "content": "={{ $json['2. Email'] }}\n\n{{ $json['3. Phone'] }}\n\n{{ $json['4. Business/Brand Name'] }}\n\n{{ $json['4a. Website/Social Media Links'] }}\n\n{{ $json['5. What\\'s the main thing you\\'re trying to solve or build?'] }}\n\n{{ $json['6. What systems/tools are you currently using?'] }}\n\n{{ $json['7. What does success look like for this project?'] }}\n\n{{ $json['8. Timeline: When do you need this implemented?'] }}\n\n{{ $json['9. Monthly budget range for this solution?'] }}",
+          "priority": 2,
+          "status": "to do"
+        }
+      },
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [240, 192],
+      "id": "node-3",
+      "name": "Create ClickUp Task",
+      "credentials": {
+        "clickUpOAuth2Api": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "ClickUp OAuth2 API"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          { "node": "Send Confirmation Email", "type": "main", "index": 0 },
+          { "node": "Create ClickUp Task", "type": "main", "index": 0 }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "instanceId": "YOUR_N8N_INSTANCE_ID"
+  },
+  "tags": []
+}

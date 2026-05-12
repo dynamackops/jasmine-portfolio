@@ -1,4 +1,4 @@
-import { uimport { useFadeUp } from '../hooks/useFadeUp'
+import { useFadeUp } from '../hooks/useFadeUp'
 
 export default function Work({ goTo }) {
   useFadeUp()
