@@ -55,6 +55,46 @@ export default function Work({ goTo }) {
       </section>
 
       <section className="services fade-up" style={{ borderTop: '1px solid var(--border)' }}>
+        <p className="section-label">What I build</p>
+        <h2 className="section-title">Apps & Custom Tools</h2>
+        <div className="services-grid">
+          <div className="service-card active fade-up">
+            <span className="service-badge badge-live"><span className="badge-dot"></span>Available now</span>
+            <h3 className="service-name">AI-Powered Web Apps</h3>
+            <p className="service-desc">I build lightweight, custom web apps powered by Claude and other LLMs. No bloated SaaS subscriptions — just tools built exactly for your workflow.</p>
+            <div className="service-tags">
+              <span className="service-tag">React</span>
+              <span className="service-tag">Next.js</span>
+              <span className="service-tag">Claude API</span>
+              <span className="service-tag">Supabase</span>
+            </div>
+          </div>
+          <div className="service-card active fade-up" style={{ transitionDelay: '.1s' }}>
+            <span className="service-badge badge-live"><span className="badge-dot"></span>Available now</span>
+            <h3 className="service-name">Internal Dashboards & Portals</h3>
+            <p className="service-desc">Custom dashboards your team will actually use. Connected to your real data, branded to your business.</p>
+            <div className="service-tags">
+              <span className="service-tag">Airtable</span>
+              <span className="service-tag">Notion API</span>
+              <span className="service-tag">Supabase</span>
+              <span className="service-tag">Tailwind</span>
+            </div>
+          </div>
+          <div className="service-card active fade-up" style={{ transitionDelay: '.2s' }}>
+            <span className="service-badge badge-live"><span className="badge-dot"></span>Available now</span>
+            <h3 className="service-name">Automation UIs</h3>
+            <p className="service-desc">Front-ends that sit on top of your automations so non-technical teammates can trigger and manage workflows themselves.</p>
+            <div className="service-tags">
+              <span className="service-tag">n8n</span>
+              <span className="service-tag">Zapier</span>
+              <span className="service-tag">Webhooks</span>
+              <span className="service-tag">React</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="services fade-up" style={{ borderTop: '1px solid var(--border)' }}>
         <p className="section-label">What I've built</p>
         <h2 className="section-title">Builds & Projects</h2>
         <div className="services-grid">
